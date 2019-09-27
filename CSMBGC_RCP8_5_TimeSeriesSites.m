@@ -61,7 +61,7 @@ for j = 1:nstn
 end
 
 %% Visualize time series data for each variable
-L = 2.5
+L = 2.5;
 bottomplot = -1500;
 for i = 1:nstn
     figure(i); clf
@@ -76,7 +76,7 @@ for i = 1:nstn
 end
 
 %% Save output for further analysis
-save RCP8_5_2005to2100_TimeSeriesSites out_ts out_ts_plot latstn lonstn stnname z
+save RCP8_5_2005to2100_TimeSeriesSites out_ts out_ts_plot latstn lonstn stnname z z_top yrslist
 
 
 
