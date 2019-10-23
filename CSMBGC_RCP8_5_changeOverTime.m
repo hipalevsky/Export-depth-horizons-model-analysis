@@ -1,6 +1,13 @@
 % Script to analyze output from different time periods within 21st century,
 % extracted from RCP 8.5 scenario output in CSMBGC_exportanalysis_RCP8_5
 
+%% Add external hard drive to path
+addpath('D:/b40.rcp8_5.1deg.bdrd.001')  
+addpath('D:/b40.rcp8_5.1deg.bdrd.001.POC')  
+
+%% Add previously processed output to path
+addpath('C:/Users/palevsky/Dropbox/MATLAB/CSMBGC data processing/RCP 8_5 processed output')
+
 %% Load constantly relevant variables by loading data from a single year
 [z, z_top, TLAT, TLONG, TAREA, REGION_MASK, ~, ~, ~, ~, ~, ~, ~] = CSMBGC_openfiles_RCP8_5(2100);
 
