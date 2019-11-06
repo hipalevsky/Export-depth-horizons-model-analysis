@@ -1,58 +1,13 @@
-%% Regrid for plotting
-%Note that if the regridded grid size gets too fine for the input data,
-%this function creates anomalous patterns where input data is scarce
-    %Also note that it might be better to make all calculations (e-ratio,
-    %etc. prior to regridding)
-lonmin = 0; lonmax = 360;
-latmin = -85; latmax = 85;
-lon_gridsize = 1; lat_gridsize = 1;
+load RCP8_5_GriddedOutput.mat %saved in CSMBGC_RCP8_5_changeOverTime_regrid
+%note that workflow to this point is:
+% 1) CSMBGC_RCP8_5_changeOverTime
+% 2) CSMBGC_RCP8_5_TaylorDecomposition
+% 3) CSMBGC_RCP8_5_changeOverTime_regrid
 
-% Pack depth criteria, POC flux at depth criteria, and NPP sum at depth criteria into stack
-for i = 1:numCriteria
-    for j = 1:2
-        stackedCriteria(:,:,i + 20*(j-1)) = output(j).depthCriteria_wAnnMean_clim{i}; %mld_all, zcomp, zeu, mldmax, 100 m
-        stackedCriteria(:,:,i+numCriteria + 20*(j-1)) = output(j).POCflux_depthCriteria_AnnMean_clim{i};
-        stackedCriteria(:,:,i+2*numCriteria + 20*(j-1)) = output(j).NPPsum_depthCriteria_AnnMean_clim{i};
-        stackedCriteria(:,:,i+3*numCriteria + 20*(j-1)) = output(j).NPPdiat_depthCriteria_AnnMean_clim{i};
-    end
-end
-
-% Add Taylor decomposition into stacked criteria
-stackedCriteria(:,:,41) = Taylor_NPPTerm;
-stackedCriteria(:,:,42) = Taylor_eRatioTerm;
-stackedCriteria(:,:,43) = Taylor_eRatioTerm_MLDmax;
-stackedCriteria(:,:,44) = Taylor_MLDchange;
-stackedCriteria(:,:,45) = Taylor_Residual_100m;
-stackedCriteria(:,:,46) = Taylor_Residual_MLDmax;
-stackedCriteria(:,:,47) = dEPdt;
-stackedCriteria(:,:,48) = dEPdt_MLDmax;
-stackedCriteria(:,:,49) = Taylor_Residual_MLDmax_wMLDchange;
-
-[glon, glat, stackedCriteria_grid] = regrid_even(TLONG, TLAT, stackedCriteria,...
-    lonmin, lonmax, latmin, latmax, lon_gridsize, lat_gridsize);
-
-%% Put back in output format
-outputGridToday.depthCriteria_wAnnMean_clim_grid = stackedCriteria_grid(:,:,1:5);
-outputGridToday.POCflux_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,6:10);
-outputGridToday.NPPsum_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,11:15);
-outputGridToday.NPPdiat_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,16:20);
-
-outputGridEndCentury.depthCriteria_wAnnMean_clim_grid = stackedCriteria_grid(:,:,21:25);
-outputGridEndCentury.POCflux_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,26:30);
-outputGridEndCentury.NPPsum_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,31:35);
-outputGridEndCentury.NPPdiat_depthCriteria_AnnMean_clim_grid = stackedCriteria_grid(:,:,36:40);
-
-outputGrid = [outputGridToday, outputGridEndCentury];
-
-TaylorGrid.NPPterm = stackedCriteria_grid(:,:,41);
-TaylorGrid.eRatioTerm_100m = stackedCriteria_grid(:,:,42);
-TaylorGrid.eRatioTerm_MLDmax = stackedCriteria_grid(:,:,43);
-TaylorGrid.MLDchange = stackedCriteria_grid(:,:,44);
-TaylorGrid.Residual_100m = stackedCriteria_grid(:,:,45);
-TaylorGrid.Residual_MLDmax = stackedCriteria_grid(:,:,46);
-TaylorGrid.dEPdt_100m = stackedCriteria_grid(:,:,47);
-TaylorGrid.dEPdt_MLDmax = stackedCriteria_grid(:,:,48);
-TaylorGrid.Residual_MLDmax_wMLDchange = stackedCriteria_grid(:,:,49);
+%% Time series site locations to plot on maps
+latstn = [60 57 40 -48]; %56, 310 - S of Greenland
+lonstn = [303 336 170 160];
+stnname = {'Labrador Sea','Iceland Basin','Kuroshio Extension','South Pacific'};
 
 %% Compare MLD_max for beginning and end of century
 
@@ -135,7 +90,7 @@ MLDmax_percentchange_21stCent_plot = 100*(outputGrid(2).depthCriteria_wAnnMean_c
 
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(MLDmax_percentchange_21stCent_plot,1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
-    %m_plot(lonstn, latstn, 'm.','markersize',20); hold on;
+    m_plot(lonstn, latstn, 'm.','markersize',20); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     title('Percent change in climatological maximum annual MLD over 21st century (%)')
@@ -240,9 +195,9 @@ set(gcf,'units','centimeters','position',[x0,y0,width,height])
 
 C = cmocean('deep');
 set(0,'defaultAxesFontSize',F)
-
-fractDiatToday = outputGridToday.NPPdiat_depthCriteria_AnnMean_clim_grid(:,:,j)./outputGridToday.NPPsum_depthCriteria_AnnMean_clim_grid(:,:,j);
-fractDiatEndCent = outputGridEndCentury.NPPdiat_depthCriteria_AnnMean_clim_grid(:,:,j)./outputGridEndCentury.NPPsum_depthCriteria_AnnMean_clim_grid(:,:,j);
+    j = 5; %set to use 100 m depth horizon
+fractDiatToday = outputGrid(1).NPPdiat_depthCriteria_AnnMean_clim_grid(:,:,j)./outputGrid(1).NPPsum_depthCriteria_AnnMean_clim_grid(:,:,j);
+fractDiatEndCent = outputGrid(2).NPPdiat_depthCriteria_AnnMean_clim_grid(:,:,j)./outputGrid(2).NPPsum_depthCriteria_AnnMean_clim_grid(:,:,j);
 cmin = 0; cmax = 100; cint = 1;
 
 subplot(2,1,1)
@@ -283,6 +238,7 @@ end
 
 %% Taylor decomposition of change in POC flux over time
 
+    %Decomposition at MLDmax, without extra term
 figure(8); clf;
 set(gcf,'color','w')
 x0=0;
@@ -320,8 +276,53 @@ subplot(224)
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     title('Residual of Taylor decomposition for change in MLD_{max} POC flux')
 
-  %%  
+  %%  Taylor decomposition at MLDmax with extra term calculated using beginning of century MLDmax depth criterion
 figure(9); clf;
+set(gcf,'color','w')
+x0=0;
+y0=0;
+width=34;
+height=22;
+set(gcf,'units','centimeters','position',[x0,y0,width,height])
+    %cmin = -75; cmax = 75;
+    cmin = -2; cmax = 2;
+    C = cmocean('balance');
+    
+    NormalizeData = 100; %outputGrid(1).POCflux_depthCriteria_AnnMean_clim_grid(:,:,4); %Annual mean POC flux from beginning of century
+
+subplot(321)
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_MLDmax./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+    title('Change in POC flux at MLD_{max} from 2005-2024 to 2081-2100')
+subplot(322)
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.NPPTerm_MLDmaxBegCent./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+    title('Change due to NPP (\deltaNPP/\deltat x e-ratio)')
+subplot(323)
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.eRatioTerm_MLDmaxBegCent./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+    title('Change due to e-ratio (\deltae-ratio_{MLDmax, 2005-2024}/\deltat x NPP)')
+subplot(324)
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_MLDmaxChange./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+    title('Change due to \DeltaMLD_{max} from 2005-2024 to 2081-2100')
+subplot(325)
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.Residual_MLDmax_BegVsEndCentCriteria./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+    title('Residual of Taylor decomposition for change in MLD_{max} POC flux')
+    
+  %%  Taylor decomposition at MLDmax with extra term calculated using POC flux profile
+figure(90); clf;
 set(gcf,'color','w')
 x0=0;
 y0=0;
@@ -364,7 +365,7 @@ subplot(325)
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     title('Residual of Taylor decomposition for change in MLD_{max} POC flux')
     
-%%
+    %% Taylor decomposition at 100 m
 figure(10); clf;
 set(gcf,'color','w')
 x0=0;
@@ -372,29 +373,30 @@ y0=0;
 width=34;
 height=14;
 set(gcf,'units','centimeters','position',[x0,y0,width,height])
-    cmin = -75; cmax = 75;
+    %cmin = -75; cmax = 75;
+    cmin = -2; cmax = 2;
     C = cmocean('balance');
     
-    NormalizeData = outputGrid(1).POCflux_depthCriteria_AnnMean_clim_grid(:,:,5); %Annual mean POC flux from beginning of century
+    NormalizeData = 100; %outputGrid(1).POCflux_depthCriteria_AnnMean_clim_grid(:,:,5); %Annual mean POC flux from beginning of century
 
 subplot(221)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Percent change in POC flux at 100 m, from 2005-2024 to 2081-2100')
+    title('Change in POC flux at 100 m, from 2005-2024 to 2081-2100')
 subplot(222)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.NPPterm./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Percent change due to NPP (\deltaNPP/\deltat x e-ratio)')
+    title('Change due to NPP (\deltaNPP/\deltat x e-ratio)')
 subplot(223)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.eRatioTerm_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Percent change due to e-ratio (\deltae-ratio/\deltat x NPP)')
+    title('Change due to e-ratio (\deltae-ratio/\deltat x NPP)')
 subplot(224)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.Residual_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;

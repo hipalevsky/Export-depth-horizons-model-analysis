@@ -224,4 +224,7 @@ Taylor_Residual_MLDmax_BegVsEndCentCriteria = dEPdt_MLDmax - Taylor_NPPTerm_MLDm
         imagesc(rot90(Taylor_Residual_MLDmax)); colormap(C); colorbar;
         caxis([cmin cmax])
         title('Residual of 1st order Taylor decomposition - old method')
+        
+%% Clear variables to free up memory
+clear POCflux_all_AnnMean NPPsum_all_AnnMean POCflux_all_AnnMean_clim NPPsum_all_AnnMean_clim
     
