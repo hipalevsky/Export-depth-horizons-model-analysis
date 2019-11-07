@@ -192,4 +192,12 @@ subplot(4, 2, i*2)
     xticklabels([{'dEP/dt','dNPP/dt','dE-ratio/dt','dMLDmax/dt','Residual'}])
 end
 
+%% Plot a prettier version of the bar graph with results of Taylor decomposition
+figure(7); clf
+    bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr; TaylorResidual_20yr])
+    title(['Taylor decomposition of POC flux changes from 2005-2021 to 2081-2100 at stations of interest'])
+    xticklabels([{'Change in POCflux_{MLDmax}','NPP component','e-ratio component','\DeltaMLD_{max} component','Residual'}])
+    legend(stnname)
+    ylabel('mol C m^{-2} yr^{-1}')
+
 
