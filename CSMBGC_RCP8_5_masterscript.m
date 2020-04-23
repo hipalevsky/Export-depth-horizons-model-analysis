@@ -33,3 +33,6 @@ CSMBGC_RCP8_5_changeOverTime_plotting
 
 % Script to interpret and plot the time series site data
 CSMBGC_RCP8_5_TimeSeriesSites_plotting
+
+%% Comparison of MLDmax with observations from WOA
+MLDmax_model_WOA_compare
