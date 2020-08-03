@@ -31,7 +31,7 @@ set(0,'defaultAxesFontSize',F)
     m_contourf([glon glon + 360], glat, repmat(outputGrid(1).depthCriteria_wAnnMean_clim_grid(:,:,4),1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-        title('CESM-BEC climatological MLD_{max}, 2005-2024 (m)')
+        title('CCSM4-BEC climatological MLD_{max}, 2005-2024 (m)')
         
     subplot(2,1,2)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
@@ -55,5 +55,30 @@ C = cmocean('balance');
     m_contourf([glon(1:end-1) glon(1:end-1) + 360], glat, repmat([outputGrid(1).depthCriteria_wAnnMean_clim_grid(:,1:end-1,4) - mldmax_woa13(:,5:end-5)'],1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-        title('CESM-BEC - WOA13 MLD_{max} (m)')
+        title('CCSM4-BEC - WOA13 MLD_{max} (m)')
+        
+%% Compare beginning of century MLD_max whether > or < 100 m
+
+F = 10; %fontsize
+
+%Maximum annual MLD at beginning and end of century
+    figure(22); clf;
+set(gcf,'color','w')
+x0=2;
+y0=2;
+width=16;
+height=14;
+set(gcf,'units','centimeters','position',[x0,y0,width,height])
+
+latminplot = -75; latmaxplot = 75;
+lonminplot = 10; lonmaxplot = 390;
+cmin = -100; cmax = 100; cint = 5;
+C = cmocean('balance');
+set(0,'defaultAxesFontSize',F)
+
+    m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
+    m_contourf([glon glon + 360], glat, repmat(outputGrid(1).depthCriteria_wAnnMean_clim_grid(:,:,4),1,2) - 100,[cmin: cint: cmax],'linecolor','none'); hold on;
+    colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
+    m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
+        title('CESM-BEC climatological MLD_{max}, 2005-2024, difference from 100 (m)')
 

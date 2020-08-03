@@ -16,8 +16,8 @@ F = 10; %fontsize
 %Maximum annual MLD at beginning and end of century
     figure(1); clf;
 set(gcf,'color','w')
-x0=5;
-y0=5;
+x0=2;
+y0=2;
 width=16;
 height=14;
 set(gcf,'units','centimeters','position',[x0,y0,width,height])
@@ -35,9 +35,9 @@ for i = 1:2
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     if i == 1
-        title('Climatological maximum annual MLD, 2005-2024 (m)')
+        title('a) Climatological MLD_{max}, 2005-2024 (m)')
     elseif i == 2
-        title('Climatological maximum annual MLD, 2081-2100 (m)')
+        title('b) Climatological MLD_{max}, 2081-2100 (m)')
     end
 end
 %%
@@ -64,10 +64,10 @@ end
 
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(MLDmax_change_21stCent_plot,1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
-    m_plot(lonstn, latstn, 'm.','markersize',20); hold on;
+    m_plot(lonstn(1:2), latstn(1:2), 'ko','markersize',8,'markerfacecolor','y'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change in climatological maximum annual MLD over 21st century (m)')
+    title('c) Change in MLD_{max} over the 21st century (m)')
     
 %% Percent Difference between maximum annual MLD at beginning and end of century
 % Just to show that places with deep initial MLDs and big absolute changes
@@ -90,10 +90,10 @@ MLDmax_percentchange_21stCent_plot = 100*(outputGrid(2).depthCriteria_wAnnMean_c
 
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(MLDmax_percentchange_21stCent_plot,1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
-    m_plot(lonstn, latstn, 'm.','markersize',20); hold on;
+    m_plot(lonstn, latstn, 'ko','markersize',6,'markerfacecolor','y'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Percent change in climatological maximum annual MLD over 21st century (%)')
+    title('Percent change in climatological MLD_{max} over 21st century (%)')
     
 %% Compare POC flux change over 21st century at 100 m and at MLD_max
 
@@ -119,9 +119,9 @@ for i = 1:2
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     if i == 1
-        title('POC flux change over 21st century, evaluated at 100 m')
+        title('a) POC flux change evaluated at 100 m')
     elseif i == 2
-        title('POC flux change over 21st century, evaluated at maximum annual MLD')
+        title('b) POC flux change evaluated at MLD_{max}')
     end
 end
 
@@ -136,7 +136,7 @@ cmin = -1; cmax = 1; cint = 0.1;
     m_contourf([glon glon + 360], glat, repmat(POCflux_changeDifference_21stCent_plot,1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Difference in POC flux change, maximum annual MLD - 100 m')
+    title('c) Difference in POC flux change, MLD_{max} - 100 m')
     
 %% Compare e-ratio change over 21st century at 100 m and at MLD_max
 
@@ -163,9 +163,9 @@ for i = 1:2
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
     if i == 1
-        title('e-ratio change over 21st century, evaluated at 100 m')
+        title('a) e-ratio change evaluated at 100 m')
     elseif i == 2
-        title('e-ratio change over 21st century, evaluated at maximum annual MLD')
+        title('b) e-ratio change evaluated at MLD_{max}')
     end
 end
 
@@ -181,7 +181,7 @@ cmin = -0.58; cmax = 0.58; cint = 0.05;
     m_contourf([glon glon + 360], glat, repmat(POCflux_changeDifference_21stCent_plot,1,2),[cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside');
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Difference in e-ratio change, maximum annual MLD - 100 m')
+    title('c) Difference in e-ratio change, MLD_{max} - 100 m')
     
 %% Calculate diatom fraction of NPP at beginning and of century, and change over time
 
@@ -290,36 +290,36 @@ set(gcf,'units','centimeters','position',[x0,y0,width,height])
     
     NormalizeData = 100; %outputGrid(1).POCflux_depthCriteria_AnnMean_clim_grid(:,:,4); %Annual mean POC flux from beginning of century
 
-subplot(321)
+subplot(3,2,[1:2])
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_MLDmax./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change in POC flux at MLD_{max} from 2005-2024 to 2081-2100')
-subplot(322)
+    title('a) Total POC flux change evaluated at MLD_{max}')
+subplot(323)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.NPPTerm_MLDmaxBegCent./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change due to NPP (\deltaNPP/\deltat x e-ratio)')
-subplot(323)
+    title('b) NPP term')
+subplot(324)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.eRatioTerm_MLDmaxBegCent./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change due to e-ratio (\deltae-ratio_{MLDmax, 2005-2024}/\deltat x NPP)')
-subplot(324)
+    title('c) e-ratio term')
+subplot(325)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_MLDmaxChange./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change due to \DeltaMLD_{max} from 2005-2024 to 2081-2100')
-subplot(325)
+    title('d) \DeltaMLD_{max} term')
+subplot(326)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.Residual_MLDmax_BegVsEndCentCriteria./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Residual of Taylor decomposition for change in MLD_{max} POC flux')
+    title('e) Residual')
     
   %%  Taylor decomposition at MLDmax with extra term calculated using POC flux profile
 figure(90); clf;
@@ -384,25 +384,25 @@ subplot(221)
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.dEPdt_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change in POC flux at 100 m, from 2005-2024 to 2081-2100')
+    title('a) Change in POC flux evaluated at 100 m')
 subplot(222)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.NPPterm./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change due to NPP (\deltaNPP/\deltat x e-ratio)')
+    title('b) NPP term evaluated at 100 m (\deltaNPP/\deltat x e-ratio)')
 subplot(223)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.eRatioTerm_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Change due to e-ratio (\deltae-ratio/\deltat x NPP)')
+    title('c) e-ratio term evaluated at (\deltae-ratio/\deltat x NPP)')
 subplot(224)
     m_proj('miller','lat',[latminplot latmaxplot],'lon',[lonminplot lonmaxplot])
     m_contourf([glon glon + 360], glat, repmat(100*(TaylorGrid.Residual_100m./NormalizeData),1,2), [cmin: cint: cmax],'linecolor','none'); hold on;
     colormap(C); caxis([cmin cmax]); hc = colorbar('eastoutside'); ylabel(hc,'mol C m^{-2} yr^{-1}')
     m_grid('box','fancy'); m_coast('patch',nicecolor('wwk'));
-    title('Residual of Taylor decomposition for change in 100 m POC flux')
+    title('d) Residual evaluated at 100 m')
     
     %%
 figure(11); clf

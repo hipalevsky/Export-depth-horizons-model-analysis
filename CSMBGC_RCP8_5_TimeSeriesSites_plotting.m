@@ -162,8 +162,8 @@ for j = 1:4
 
     dEratiodt_10yr(j) = mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(end-9:end))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(end-9:end))) -...
         mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(1:10))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10)));
-    dEratiodt_20yr(j) = mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(end-19:end))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(end-19:end))) -...
-        mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(1:20))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:20)));
+    dEratiodt_20yr(j) = mean((out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(end-19:end))./(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(end-19:end))) -...
+        mean((out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(1:20))./(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20)));
 
     TaylorEratioterm_10yr(j) = dEratiodt_10yr(j)*mean(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10));
     TaylorEratioterm_20yr(j) = dEratiodt_20yr(j)*mean(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20));
@@ -195,9 +195,19 @@ end
 %% Plot a prettier version of the bar graph with results of Taylor decomposition
 figure(7); clf
     bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr; TaylorResidual_20yr])
-    title(['Taylor decomposition of POC flux changes from 2005-2021 to 2081-2100 at stations of interest'])
-    xticklabels([{'Change in POCflux_{MLDmax}','NPP component','e-ratio component','\DeltaMLD_{max} component','Residual'}])
+    %title(['Taylor decomposition of POC flux changes from 2005-2021 to 2081-2100 at stations of interest'])
+    xticklabels([{'Change in POCflux_{MLDmax}','NPP term','e-ratio term','\DeltaMLD_{max} term','Residual'}])
     legend(stnname)
     ylabel('mol C m^{-2} yr^{-1}')
+    
+%% Plot e-ratio over time at 1000 m horizon
+figure(8); clf
+for i = 1:4
+subplot(4, 1, i)
+    plot(out_ts_plot{i}.POCflux_annmean(41,:)./out_ts_plot{i}.NPP_sum_annmean(41,:)*10,'b-'); hold on;
+    plot(out_ts_plot{i}.POCflux_annmean(11,:)./out_ts_plot{i}.NPP_sum_annmean(11,:),'r-'); hold on;
+    %plot(out_ts_plot{i}.POCflux_annmean(41,:),'r-'); hold on;
+end
+legend('1000 m depth horizon x 10','100 m depth horizon')
 
 
