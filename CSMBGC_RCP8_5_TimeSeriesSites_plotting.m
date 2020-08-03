@@ -17,6 +17,7 @@ end
 for i = 1:nstn
     out_ts{i}.mld_max_beg10yrs = mean(out_ts{i}.mld_max(1:10));
     out_ts{i}.mld_max_beg20yrs = mean(out_ts{i}.mld_max(1:20));
+    out_ts{i}.mld_max_end20yrs = mean(out_ts{i}.mld_max(end-19:end));
 end
 
 %% Map maximum annual MLD onto out_ts_plot shape
@@ -50,8 +51,10 @@ for i = 1:nummon
         %Calculate values at beginning of century mldmax (just POCflux and NPP_sum)
         out_ts_plot{j}.POCflux_mldmax_beg10yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.POCflux(:,i)), out_ts{j}.mld_max_beg10yrs);
         out_ts_plot{j}.POCflux_mldmax_beg20yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.POCflux(:,i)), out_ts{j}.mld_max_beg20yrs);
+        out_ts_plot{j}.POCflux_mldmax_end20yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.POCflux(:,i)), out_ts{j}.mld_max_end20yrs);
         out_ts_plot{j}.NPP_sum_mldmax_beg10yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.NPP_sum_ext(:,i)), out_ts{j}.mld_max_beg10yrs);
         out_ts_plot{j}.NPP_sum_mldmax_beg20yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.NPP_sum_ext(:,i)), out_ts{j}.mld_max_beg20yrs);
+        out_ts_plot{j}.NPP_sum_mldmax_end20yrs(i) = interp1(z_top, squeeze(out_ts_plot{j}.NPP_sum_ext(:,i)), out_ts{j}.mld_max_end20yrs);
     end
 end
 %% Calculate annual mean POC flux and NPP values at mldmax and at 100m
@@ -71,8 +74,10 @@ for i = 1:length(yrslist)
       %Values for mldmax from beginning of century
         out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(i) = mean(out_ts_plot{j}.POCflux_mldmax_beg10yrs((i-1)*12+1:i*12));
         out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(i) = mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs((i-1)*12+1:i*12));
+        out_ts_plot{j}.POCflux_mldmax_end20yrs_annmean(i) = mean(out_ts_plot{j}.POCflux_mldmax_end20yrs((i-1)*12+1:i*12));
         out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(i) = mean(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs((i-1)*12+1:i*12));
         out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(i) = mean(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs((i-1)*12+1:i*12));
+        out_ts_plot{j}.NPP_sum_mldmax_end20yrs_annmean(i) = mean(out_ts_plot{j}.NPP_sum_mldmax_end20yrs((i-1)*12+1:i*12));
       %Profile values as annual mean
         out_ts_plot{j}.POCflux_annmean(:,i) = mean(out_ts_plot{j}.POCflux(:,(i-1)*12+1:i*12)');
         out_ts_plot{j}.NPP_sum_annmean(:,i) = mean(out_ts_plot{j}.NPP_sum_ext(:,(i-1)*12+1:i*12)');
@@ -170,9 +175,15 @@ for j = 1:4
 
     TaylorMLDmaxterm_10yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-9:end)) - mean(out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(end-9:end));
     TaylorMLDmaxterm_20yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-19:end)) - mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(end-19:end));
+    TaylorMLDmaxterm_20yr_endprof(j) = mean(out_ts_plot{j}.POCflux_mldmax_end20yrs_annmean(end-19:end)) - mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(end-19:end));
+    TaylorMLDmaxterm_20yr_begprof(j) = mean(out_ts_plot{j}.POCflux_mldmax_end20yrs_annmean(1:20)) - mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(1:20));
+    TaylorMLDmaxterm_20yr_midprof(j) = mean(out_ts_plot{j}.POCflux_mldmax_end20yrs_annmean(41:60)) - mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(41:60));
 
     TaylorResidual_10yr(j) = dEPdt_10yr(j) - TaylorNPPterm_10yr(j) - TaylorEratioterm_10yr(j) - TaylorMLDmaxterm_10yr(j);
     TaylorResidual_20yr(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr(j);
+    TaylorResidual_20yr_endprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_endprof(j);
+    TaylorResidual_20yr_begprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_begprof(j);
+    TaylorResidual_20yr_midprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_midprof(j);
     
     NormalizeData_10yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:10));
     NormalizeData_20yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:20));
@@ -196,6 +207,27 @@ end
 figure(7); clf
     bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr; TaylorResidual_20yr])
     %title(['Taylor decomposition of POC flux changes from 2005-2021 to 2081-2100 at stations of interest'])
+    xticklabels([{'Change in POCflux_{MLDmax}','NPP term','e-ratio term','\DeltaMLD_{max} term','Residual'}])
+    legend(stnname)
+    ylabel('mol C m^{-2} yr^{-1}')
+
+figure(71); clf
+    bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr_begprof; TaylorResidual_20yr_begprof])
+    title(['Taylor decomposition of POC flux changes using beginning profiles'])
+    xticklabels([{'Change in POCflux_{MLDmax}','NPP term','e-ratio term','\DeltaMLD_{max} term','Residual'}])
+    legend(stnname)
+    ylabel('mol C m^{-2} yr^{-1}')
+    
+figure(72); clf
+    bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr_midprof; TaylorResidual_20yr_midprof])
+    title(['Taylor decomposition of POC flux changes using middle profiles'])
+    xticklabels([{'Change in POCflux_{MLDmax}','NPP term','e-ratio term','\DeltaMLD_{max} term','Residual'}])
+    legend(stnname)
+    ylabel('mol C m^{-2} yr^{-1}')
+        
+figure(73); clf
+    bar([dEPdt_20yr; TaylorNPPterm_20yr; TaylorEratioterm_20yr; TaylorMLDmaxterm_20yr_endprof; TaylorResidual_20yr_endprof])
+    title(['Taylor decomposition of POC flux changes using end profiles'])
     xticklabels([{'Change in POCflux_{MLDmax}','NPP term','e-ratio term','\DeltaMLD_{max} term','Residual'}])
     legend(stnname)
     ylabel('mol C m^{-2} yr^{-1}')
