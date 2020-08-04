@@ -250,4 +250,39 @@ subplot(4, 1, i)
 end
 legend('1000 m depth horizon x 10','100 m depth horizon')
 
+%% Plot beginning and end of century depth profiles at each site
+figure(9); clf
+    L = 2;
+    L2 = 1;
+for i = 1:4
+subplot(2,2,i)
+    plot(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,1:20)')), z_top, 'k-','linewidth',L); hold on;
+    plot(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,end-19:end)')), z_top, 'b-','linewidth',L); hold on;
+%     errorbar(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,1:20)')), z_top,...
+%         std(squeeze(out_ts_plot{i}.POCflux_annmean(:,1:20)')), 'k.'); hold on;
+%     errorbar(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,end-19:end)')), z_top,...
+%         std(squeeze(out_ts_plot{i}.POCflux_annmean(:,end-19:end)')), 'b.'); hold on;
+    plot([0 5], repmat(mean(out_ts{i}.mld_max(1:20)),2,1), 'k--','linewidth',L2); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(1:20)) + std(out_ts{i}.mld_max(1:20))),2,1), 'k--'); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(1:20)) - std(out_ts{i}.mld_max(1:20))),2,1), 'k--'); hold on;
+    plot([0 5], repmat(mean(out_ts{i}.mld_max(end-19:end)),2,1), 'b--','linewidth',L2); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(end-19:end)) + std(out_ts{i}.mld_max(end-19:end))),2,1), 'b--'); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(end-19:end)) - std(out_ts{i}.mld_max(end-19:end))),2,1), 'b--'); hold on;
+    axis ij 
+    if i == 1
+        ylim([0 1500])
+    else
+        ylim([0 750])
+    end
+    if i == 3
+        xlim([0 2.5])
+    end
+    title(stnname(i))
+    ylabel('Depth (m)')
+    xlabel('POC flux (mol C m^{-2} yr^{-1})')
+    if i == 4
+        legend('2005-2024','2081-2100','MLD_{max, 2005-2024}','MLD_{max, 2081-2100}','location','southeast')
+    end
+end
+
 
