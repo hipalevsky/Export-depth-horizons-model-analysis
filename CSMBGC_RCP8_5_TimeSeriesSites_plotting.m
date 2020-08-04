@@ -156,22 +156,29 @@ for j = 1:4
 %Calculate Taylor decomposition terms for each time series site
     dEPdt_10yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-9:end)) - mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:10));
     dEPdt_20yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-19:end)) - mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:20));
+    dEPdt_20yr_100m(j) = mean(squeeze(out_ts_plot{j}.POCflux_annmean(11,end-19:end))) - mean(squeeze(out_ts_plot{j}.POCflux_annmean(11,1:20)));
 
     dNPPdt_10yr(j) = mean(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(end-9:end)) - mean(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10));
     dNPPdt_20yr(j) = mean(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(end-19:end)) - mean(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20));
+    dNPPdt_20yr_100m(j) = mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,end-19:end))) - mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,1:20)));
 
     TaylorNPPterm_10yr(j) = dNPPdt_10yr(j)*...
         mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(1:10)./out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10)));
     TaylorNPPterm_20yr(j) = dNPPdt_20yr(j)*...
         mean((out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(1:20)./out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20)));
+    TaylorNPPterm_20yr_100m(j) = dNPPdt_20yr_100m(j)*...
+        mean(squeeze(out_ts_plot{j}.POCflux_annmean(11,1:20)))./mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,1:20)));
 
     dEratiodt_10yr(j) = mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(end-9:end))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(end-9:end))) -...
         mean((out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(1:10))./(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10)));
     dEratiodt_20yr(j) = mean((out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(end-19:end))./(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(end-19:end))) -...
         mean((out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(1:20))./(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20)));
-
+    dEratiodt_20yr_100m(j) = mean(squeeze(out_ts_plot{j}.POCflux_annmean(11,end-19:end)))./mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,end-19:end))) -...
+        mean(squeeze(out_ts_plot{j}.POCflux_annmean(11,1:20)))./mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,1:20)));
+    
     TaylorEratioterm_10yr(j) = dEratiodt_10yr(j)*mean(out_ts_plot{j}.NPP_sum_mldmax_beg10yrs_annmean(1:10));
     TaylorEratioterm_20yr(j) = dEratiodt_20yr(j)*mean(out_ts_plot{j}.NPP_sum_mldmax_beg20yrs_annmean(1:20));
+    TaylorEratioterm_20yr_100m(j) = dEratiodt_20yr_100m(j)*mean(squeeze(out_ts_plot{j}.NPP_sum_annmean(11,1:20)));
 
     TaylorMLDmaxterm_10yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-9:end)) - mean(out_ts_plot{j}.POCflux_mldmax_beg10yrs_annmean(end-9:end));
     TaylorMLDmaxterm_20yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(end-19:end)) - mean(out_ts_plot{j}.POCflux_mldmax_beg20yrs_annmean(end-19:end));
@@ -184,6 +191,7 @@ for j = 1:4
     TaylorResidual_20yr_endprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_endprof(j);
     TaylorResidual_20yr_begprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_begprof(j);
     TaylorResidual_20yr_midprof(j) = dEPdt_20yr(j) - TaylorNPPterm_20yr(j) - TaylorEratioterm_20yr(j) - TaylorMLDmaxterm_20yr_midprof(j);
+    TaylorResidual_20yr_100m(j) = dEPdt_20yr_100m(j) -TaylorNPPterm_20yr_100m(j) - TaylorEratioterm_20yr_100m(j);
     
     NormalizeData_10yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:10));
     NormalizeData_20yr(j) = mean(out_ts_plot{j}.POCflux_mldmax_annmean(1:20));
