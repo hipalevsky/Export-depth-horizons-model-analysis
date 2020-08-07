@@ -285,4 +285,65 @@ subplot(2,2,i)
     end
 end
 
+figure(10); clf
+    L = 2;
+    L2 = 1;
+for i = 1:4
+subplot(2,2,i)
+    plot(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,1:20)'))./mean(squeeze(out_ts_plot{i}.NPP_sum_ext(:,1:20)')),...
+        z_top, 'k-','linewidth',L); hold on;
+    plot(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,end-19:end)'))./mean(squeeze(out_ts_plot{i}.NPP_sum_ext(:,end-19:end)')),...
+        z_top, 'b-','linewidth',L); hold on;
+    plot([0 5], repmat(mean(out_ts{i}.mld_max(1:20)),2,1), 'k--','linewidth',L2); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(1:20)) + std(out_ts{i}.mld_max(1:20))),2,1), 'k--'); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(1:20)) - std(out_ts{i}.mld_max(1:20))),2,1), 'k--'); hold on;
+    plot([0 5], repmat(mean(out_ts{i}.mld_max(end-19:end)),2,1), 'b--','linewidth',L2); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(end-19:end)) + std(out_ts{i}.mld_max(end-19:end))),2,1), 'b--'); hold on;
+    %plot([0 5], repmat((mean(out_ts{i}.mld_max(end-19:end)) - std(out_ts{i}.mld_max(end-19:end))),2,1), 'b--'); hold on;
+    axis ij 
+    if i == 1
+        ylim([0 1500])
+    else
+        ylim([0 750])
+    end
+    %if i == 3
+        xlim([0 0.4])
+    %end
+    title(stnname(i))
+    ylabel('Depth (m)')
+    xlabel('POC flux (mol C m^{-2} yr^{-1})')
+    if i == 4
+        legend('2005-2024','2081-2100','MLD_{max, 2005-2024}','MLD_{max, 2081-2100}','location','southeast')
+    end
+end
+
+%% Calculate e-ratio and transfer efficiency with depth
+
+%Calculate at compensation depth (max POC flux through depth profile) + at 100 m below compensation depth
+for i = 1:4
+    [POCflux_max(i,2), POCflux_max_ind(i,2)] = max(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,end-19:end)')));
+    [POCflux_max(i,1), POCflux_max_ind(i,1)] = max(mean(squeeze(out_ts_plot{i}.POCflux_annmean(:,1:20)')));
+    POCflux_100m(i,2) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(11,end-19:end)'));
+    POCflux_100m(i,1) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(11,1:20)'));
+    POCflux_500m(i,2) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(34,end-19:end)'));
+    POCflux_500m(i,1) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(34,1:20)'));
+    POCflux_2000m(i,2) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(47,end-19:end)'));
+    POCflux_2000m(i,1) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(47,1:20)'));
+    NPP_100m(i,2) = mean(squeeze(out_ts_plot{i}.NPP_sum_annmean(11,end-19:end)'));
+    NPP_100m(i,1) = mean(squeeze(out_ts_plot{i}.NPP_sum_annmean(11,1:20)'));
+    for j = 1:2
+        NPP_POCfluxmax(i,j) = mean(squeeze(out_ts_plot{i}.NPP_sum_annmean(POCflux_max_ind(i,j),end-19:end)'));
+        NPP_100belowPOCfluxmax(i,j) = mean(squeeze(out_ts_plot{i}.NPP_sum_annmean(POCflux_max_ind(i,j) + 10,end-19:end)'));
+        POCflux_100belowPOCfluxmax(i,j) = mean(squeeze(out_ts_plot{i}.POCflux_annmean(POCflux_max_ind(i,j) + 10,end-19:end)'));
+    end
+end
+
+StnTable.eratios_compdepth = POCflux_max./NPP_POCfluxmax;
+StnTable.eratios_100m = POCflux_100m./NPP_100m;
+StnTable.TE_100mbelowcomp = POCflux_100belowPOCfluxmax./POCflux_max;
+StnTable.TE_100to500 = POCflux_500m./POCflux_100m;
+StnTable.TE_100to2000 = POCflux_2000m./POCflux_100m;
+StnTable.TE_compto2000 = POCflux_2000m./POCflux_max;
+
+%Also calculate e-ratio at 100 m and transfer efficiency to 500 m
 
