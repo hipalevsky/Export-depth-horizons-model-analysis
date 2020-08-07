@@ -311,7 +311,7 @@ subplot(2,2,i)
     %end
     title(stnname(i))
     ylabel('Depth (m)')
-    xlabel('POC flux (mol C m^{-2} yr^{-1})')
+    xlabel('e-ratio')
     if i == 4
         legend('2005-2024','2081-2100','MLD_{max, 2005-2024}','MLD_{max, 2081-2100}','location','southeast')
     end
@@ -345,5 +345,4 @@ StnTable.TE_100to500 = POCflux_500m./POCflux_100m;
 StnTable.TE_100to2000 = POCflux_2000m./POCflux_100m;
 StnTable.TE_compto2000 = POCflux_2000m./POCflux_max;
 
-%Also calculate e-ratio at 100 m and transfer efficiency to 500 m
 
